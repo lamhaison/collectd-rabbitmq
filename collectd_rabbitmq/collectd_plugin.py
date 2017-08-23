@@ -3,7 +3,7 @@
 # Copyright (c) 2014 The New York Times Company
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
+# you may not ue this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
@@ -33,7 +33,6 @@ def configure(config_values):
     """
     Converts a collectd configuration into rabbitmq configuration.
     """
-
     collectd.debug('Configuring RabbitMQ Plugin')
     data_to_ignore = dict()
     scheme = 'http'
@@ -298,7 +297,7 @@ class CollectdPlugin(object):
         :param type_instance: Optional.
 
         """
-        path = "{0}.{1}.{2}.{3}.{4}".format(host, plugin,
+        path = "host={0} plugin={1} plugin_instance={2} metric_type={3} type_instance={4}".format(host, plugin,
                                             plugin_instance,
                                             metric_type, type_instance)
 
@@ -306,9 +305,13 @@ class CollectdPlugin(object):
 
         try:
             metric = collectd.Values()
-            metric.host = host
+            # metric.host = 'prod-admin-test.' + host
 
-            metric.plugin = plugin
+            if plugin:
+                metric.plugin = host + '.' + plugin
+            else:
+                metric.plugin = host
+                # metric.plugin = plugin
 
             if plugin_instance:
                 metric.plugin_instance = plugin_instance
@@ -326,7 +329,7 @@ class CollectdPlugin(object):
             # versions < 5.5.
             # See https://github.com/phobos182/collectd-elasticsearch/issues/15
             # for details
-            metric.meta = {'0': True}
+            #metric.meta = {'0': True}
             metric.dispatch()
         except Exception as ex:
             collectd.warning("Failed to dispatch %s. Exception %s" %
